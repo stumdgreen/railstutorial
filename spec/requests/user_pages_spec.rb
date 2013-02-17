@@ -70,6 +70,12 @@ describe 'User Page' do
         let(:user) { User.find_by_email('example@user.com') }
         it { should have_selector('title', text: user.name) }
         it { should have_selector('.alert.alert-success', text: 'Welcome') }
+        it { should have_link('Sign out') }
+
+        describe "followed by signout" do
+          before { click_link "Sign out" }
+          it { should have_link('Sign in') }
+        end
       end
 
     end
