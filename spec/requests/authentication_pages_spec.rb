@@ -42,6 +42,21 @@ describe "Authentication" do
         before { put user_path(user) }
         specify { response.should redirect_to(signin_path) }
       end
+
+      describe "when attempting to visit a protected page" do
+        before do
+          visit edit_user_path(user)
+          fill_in "Email", with: user.email
+          fill_in "Password", with: user.password
+          click_button "Sign in"
+        end
+
+        describe "after signing in" do
+          it "Should render the originally requested protected page" do
+            page.should have_selector('title', text: "Edit user")
+          end
+        end
+      end
     end
 
     describe "as wrong user" do
