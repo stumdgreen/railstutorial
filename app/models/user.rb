@@ -34,6 +34,11 @@ class User < ActiveRecord::Base
     uniqueness: { case_sensitive: false },
     format: { with: VALID_EMAIL_REGEX }
 
+  def feed
+    # @TODO: Preliminary. See "Following Users"
+    Micropost.where("user_id = ?", id)
+  end
+
   private
     def create_remember_token
       self.remember_token = SecureRandom.urlsafe_base64
