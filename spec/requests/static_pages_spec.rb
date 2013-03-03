@@ -17,16 +17,67 @@ describe "Static Pages" do
 
     describe "for signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
-      before do
-        FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
-        FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
-        sign_in user
-        visit root_path
+
+      describe "without any feed items" do
+        it { should_not have_selector('ol', class: 'microposts') }
       end
 
-      it "should render the user's feed" do
-        user.feed.each do |item|
-          page.should have_selector("li##{item.id}", text: item.content)
+      describe "with one feed item" do
+        before do
+          FactoryGirl.create(:micropost, user: user)
+          sign_in user
+          visit root_path
+        end
+
+        it { should have_selector('ol', class: 'microposts') }
+        it { should have_content("1 micropost") }
+      end
+
+      describe "with two feed items" do
+        before do
+          FactoryGirl.create(:micropost, user: user)
+          FactoryGirl.create(:micropost, user: user)
+          sign_in user
+          visit root_path
+        end
+        
+        it { should have_selector('ol', class: 'microposts') }
+        it { should have_content("2 microposts") }
+        it "should render the user's feed" do
+          user.feed.each do |item|
+            page.should have_selector("li##{item.id}", text: item.content)
+          end
+        end
+      end
+
+      describe "with enough feed items to trigger pagination" do
+        before do
+          40.times { FactoryGirl.create(:micropost, user: user) }
+          sign_in user
+          visit root_path
+        end
+        
+        it { should have_selector('ol', class: 'microposts') }
+        it { should have_content("40 microposts") }
+        it "should render the first page of user's feed items" do
+          user.feed[0..29].each do |item|
+            page.should have_selector("li##{item.id}", text: item.content)
+          end
+        end
+        it "should not render the second page of user's feed items" do
+          user.feed[30..39].each do |item|
+            page.should_not have_selector("li##{item.id}", text: item.content)
+          end
+        end
+
+         describe "on the second page of feed items" do
+          before { click_link "2" }
+
+          it "should render the second page of feed items" do
+            user.feed[30..39].each do |item|
+              page.should have_selector("li##{item.id}", text: item.content)
+            end
+          end
         end
       end
     end

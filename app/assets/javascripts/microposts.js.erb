@@ -1,0 +1,25 @@
+(function() {
+  var max_characters = <%= Micropost::MAXIMUM_CHARACTERS %>;
+
+  $(function() {
+    var $count_indicator = $('p.characters_left span');
+    var $compose_area = $('#micropost_content');
+
+    $compose_area.on('keyup', update_counter);
+
+    function update_counter() {
+      var characters_left = max_characters - $compose_area.val().length;
+
+      $count_indicator.html(characters_left);
+
+      if (characters_left < 0) {
+          $count_indicator.removeClass("few").addClass("none");
+      } else if (characters_left < 10) {
+          $count_indicator.removeClass("none").addClass("few");
+      } else {
+        $count_indicator.removeClass("few").removeClass("none");
+      }
+    }
+
+  });
+})();

@@ -147,9 +147,23 @@ describe 'User Page' do
 
   describe 'profile page' do
     let(:user) { FactoryGirl.create(:user) }
-    before { visit user_path(user) }
-    it { should have_selector('h1', text: user.name) }
-    it { should have_selector('title', text: user.name) }
+
+    describe "for a user without microposts" do
+      before { visit user_path(user) }
+      
+      it { should have_selector('h1', text: user.name) }
+      it { should have_selector('title', text: user.name) }
+      it { should_not have_selector('h3', text: "Microposts (10)") }
+    end
+
+    describe "for a user with microposts" do
+      before do
+        10.times { FactoryGirl.create(:micropost, user: user) }
+        visit user_path(user)
+      end
+
+      it { should have_selector('h3', text: "Microposts (10)") }
+    end
   end
 
   describe "edit" do

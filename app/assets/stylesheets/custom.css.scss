@@ -126,10 +126,19 @@ aside {
       border: 0;
       padding-top: 0;
     }
-    span {
-      display: block;
+    p {
       margin-bottom: 3px;
       line-height: 1;
+    }
+    .characters_left {
+      float: right;
+      line-height: 40px;
+      .few {
+        color: #f90;
+      }
+      .none {
+        color: #c00;
+      }
     }
     h1 {
       font-size: 1.4em;
