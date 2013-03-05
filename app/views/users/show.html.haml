@@ -6,7 +6,10 @@
         = gravatar_for @user, size: 40
         = @user.name
       %p= @user.email
+    %section
+      = render 'shared/stats'
   .span8
+    = render 'follow_form' if signed_in?
     - if @microposts.count > 0
       %h3= "Microposts (#{@user.microposts.count})"
       = will_paginate @microposts
